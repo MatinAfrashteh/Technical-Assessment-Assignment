@@ -7,15 +7,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -31,18 +28,18 @@ public class ClaimServiceTest {
     @InjectMocks
     ClaimService claimService;
 
-    Claim fakeClaim;
+    Claim fakeClaims;
 
     @BeforeEach
     void setup() {
-        fakeClaim = new Claim(1, null, null, 2);
+        fakeClaims = new Claim(1,null,null,null,2);
 
     }
 
     @Test
     void shouldReturnListWithOneClaim_whenSingleClaimExists() {
 
-        when(claimRepository.findAll()).thenReturn(List.of(fakeClaim));
+        when(claimRepository.findAll()).thenReturn(List.of(fakeClaims));
         Assertions.assertEquals(1, claimService.getAllClaim().size());
 
     }
@@ -59,31 +56,31 @@ public class ClaimServiceTest {
     @Test
     void shouldReturnExpectedClaimFromList_whenClaimsArePresent() {
 
-        when(claimRepository.findAll()).thenReturn(List.of(fakeClaim));
+        when(claimRepository.findAll()).thenReturn(List.of(fakeClaims));
         List<Claim> result = claimService.getAllClaim();
 
-        Assertions.assertEquals(fakeClaim,result.get(0));
+        Assertions.assertEquals(fakeClaims,result.get(0));
 
     }
 
     @Test
     void shouldSaveValidClaimSuccessfully() throws Exception {
-        when(claimRepository.save(fakeClaim)).thenReturn(fakeClaim);
-        Claim claims = claimService.saveClaim(fakeClaim);
-        Assertions.assertEquals(fakeClaim,claims);
-        verify(claimRepository).save(fakeClaim);
+        when(claimRepository.save(fakeClaims)).thenReturn(fakeClaims);
+        Claim claims = claimService.saveClaim(fakeClaims);
+        Assertions.assertEquals(fakeClaims,claims);
+        verify(claimRepository).save(fakeClaims);
     }
 
     @Test
     void shouldThrowException_whenRepositoryReturnsNullOnSave() {
-        when(claimRepository.save(fakeClaim)).thenReturn(null);
-        assertThrows(Exception.class, () -> claimService.saveClaim(fakeClaim), "data should not null");
+        when(claimRepository.save(fakeClaims)).thenReturn(null);
+        assertThrows(Exception.class, () -> claimService.saveClaim(fakeClaims), "data should not null");
 
     }
 
     @Test
     void shouldThrowException_whenSavingInvalidClaim() {
-        Claim invalidClaim = new Claim(1, null, null, 0);
+        Claim invalidClaim = new Claim(1, null, null, null,-1);
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {claimService.saveClaim(invalidClaim);},"data should not null");
         verify(claimRepository, never()).save(any());

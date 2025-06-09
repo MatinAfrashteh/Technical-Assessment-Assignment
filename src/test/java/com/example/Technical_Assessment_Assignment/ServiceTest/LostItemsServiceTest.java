@@ -32,7 +32,6 @@ public class LostItemsServiceTest {
     LostItemsService lostItemsService;
 
     LostItems fakeLostItems;
-    LostItems fakeLostItem;
 
     @BeforeEach
     void setup(){
